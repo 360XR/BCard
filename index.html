@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content='width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=yes'>
-    <title>Unity WebGL Player | BCard</title>
+    <title>Unity WebGL Player | BCardW</title>
     <link rel="stylesheet" href="TemplateData/style.css">
     <style>
         html{
@@ -34,7 +34,7 @@
 </head>
 <body>
     <!--IMAGETARGETS-->
-		<imagetarget id='BCard_Target' src='targets/BCard_Target.jpg'></imagetarget>
+		<imagetarget id='QR_Target' src='targets/QR_Target_586x1024.png'></imagetarget>
 
     <video id="webcam-video" muted autoplay playsinline style="width:1px;position:absolute"></video>
     <!-- <video id="webcam-video" muted autoplay playsinline style="width:100%; height:100%; object-fit:cover; position:absolute"></video> -->
@@ -105,7 +105,7 @@
                     codeUrl: "Build/BCard.wasm",
                     streamingAssetsUrl: "StreamingAssets",
                     companyName: "DefaultCompany",
-                    productName: "BCard",
+                    productName: "BCardW",
                     productVersion: "0.1",
                     //webglContextAttributes: { "preserveDrawingBuffer": true },
                     // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
@@ -223,7 +223,26 @@
                 //place global settings here
                 INTERNAL_SMOOTHFACTOR_POS: .075,
             }
-            
+			window.SpeechBlendWEBGL = {};
+        window.AudioContext = (function () {
+            var ACConsructor = window.AudioContext || window.webkitAudioContext;
+            return function () {
+                var ac = new ACConsructor();
+                window.SpeechBlendWEBGL.ac = ac;
+                window.SpeechBlendWEBGL.a = ac.createAnalyser();
+                window.SpeechBlendWEBGL.a.smoothingTimeConstant = 0;
+                window.SpeechBlendWEBGL.fa = new Uint8Array(window.SpeechBlendWEBGL.a.frequencyBinCount);
+                window.SpeechBlendWEBGL.la = new Uint8Array(window.SpeechBlendWEBGL.a.fftSize);
+                window.SpeechBlendWEBGL.a.connect(ac.destination);
+                ac.actualDestination = ac.destination;
+                Object.defineProperty(ac, 'destination', {
+                    value: window.SpeechBlendWEBGL.a,
+                    writable: false
+                });
+                return ac;
+            }
+        })();            
+		StartAR();
     </script>
 </body>
 </html>
